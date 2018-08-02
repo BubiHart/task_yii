@@ -42,7 +42,10 @@ $config = [
                 ],
             ],
         ],
-        'db' => $db,
+        'mongodb' => [
+            'class' => yii\mongodb\Connection::className(),
+            'dsn' => 'mongodb://root:tgEm8ZObfIpzXY2bNBSl@ds159121.mlab.com:59121/task',
+        ],
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,

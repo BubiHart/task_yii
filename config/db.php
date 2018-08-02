@@ -1,14 +1,21 @@
 <?php
+use yii\mongodb\Connection;
+
 
 return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '',
-    'charset' => 'utf8',
-
-    // Schema cache options (for production environment)
-    //'enableSchemaCache' => true,
-    //'schemaCacheDuration' => 60,
-    //'schemaCache' => 'cache',
+    'components' => [
+        'db' => [
+            'class' => yii\mongodb\Connection::className(),
+            'dsn' => 'mongodb://root:tgEm8ZObfIpzXY2bNBSl@ds159121.mlab.com:59121/task',
+        ],
+    ],
 ];
+
+
+/*
+return [
+    'class' => 'yii\db\Connection',
+    'dsn' => 'mongodb://root:tgEm8ZObfIpzXY2bNBSl@ds159121.mlab.com:59121/task',
+
+];
+*/

@@ -1,8 +1,19 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
+$this->title = 'Registration';
+$this->params['breadcrumbs'][] = $this->title;
+
 ?>
-<?php $form = ActiveForm::begin(); ?>
+<h1><?= Html::encode($this->title)?></h1>
+
+<?php $form = ActiveForm::begin([
+    'id' => 'register-form',
+    'fieldConfig' => [
+        'template' => "{label}\n{input}{error}",
+    ],
+]); ?>
 
 <?= $form->field($model, 'login') ?>
 

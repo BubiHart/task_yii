@@ -11,6 +11,9 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
 
+use yii\mongodb\Connection;
+//use yii\db\Connection;
+
 class SiteController extends Controller
 {
     /**
@@ -92,11 +95,9 @@ class SiteController extends Controller
         $model = new EntryForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            // valid data received in $model
 
-            // do something meaningful here about $model ...
-
-            return $this->render('entry-confirm', ['model' => $model]);
+            $model->insert_user_data($model->login, $model->password);
+            return $this->render('index', ['model' => $model]);
         } else {
             // either the page is initially displayed or there is some validation error
             return $this->render('entry', ['model' => $model]);
