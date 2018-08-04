@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <ul>
     <?php foreach ($users as $user): ?>
         <li>
-            <?= Html::encode("{$user->_id}: {$user->login}, {$user->password}") ?>:
+            <?= Html::encode("{$user->_id}: {$user->login}, {$user->password}") ?>
         </li>
     <?php endforeach; ?>
 </ul>

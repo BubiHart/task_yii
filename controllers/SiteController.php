@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\ChangeUserData;
 use Yii;
 use yii\filters\AccessControl;
 use app\models\Users;
@@ -83,7 +84,7 @@ class SiteController extends Controller
 
         if($model->load(Yii::$app->request->post()) && $model->login())
         {
-            return $this->redirect(['site/index']);
+            return $this->goBack();
         }
 
         return $this->render('login', [
@@ -148,7 +149,16 @@ class SiteController extends Controller
         if (Yii::$app->user->isGuest) {
             return $this->actionLogin();
         }
-        return $this->render('user');
 
+        $model = new ChangeUserData();
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate())
+        {
+            return $this->render('index');
+        }
+
+            return $this->render('user', [
+            'model' => $model,
+            ]);
     }
 }

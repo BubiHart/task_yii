@@ -6,7 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\mongodb\ActiveRecord;
 use yii\mongodb\Connection;
-use yii\validators\UniqueValidator;
+use yii\mongodb\validators;
 
 class EntryForm extends ActiveRecord
 {
@@ -17,10 +17,20 @@ class EntryForm extends ActiveRecord
     {
         return [
             [['login', 'password'], 'required'],
-            ['login', 'unique'],
-        ];
-    }   
+            ['login', 'unique', 'targetAttribute' => 'login', 'message' => 'This login has already been taken'],
 
+        ];
+    }
+
+    public static function collectionName()
+    {
+        return ['task', 'users'];
+    }
+
+    public function attributes()
+    {
+        return ['_id', 'login', 'password'];
+    }
 
     public function insert_user_data($login, $password)
     {
