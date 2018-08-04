@@ -19,7 +19,7 @@ class EntryForm extends ActiveRecord
             [['login', 'password'], 'required'],
             ['login', 'unique'],
         ];
-    }
+    }   
 
 
     public function insert_user_data($login, $password)

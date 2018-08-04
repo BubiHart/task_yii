@@ -2,103 +2,57 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\helpers\Security;
+use yii\web\IdentityInterface;
+use yii\mongodb\ActiveRecord;
+
+
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $login;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    //public $_id;
+    //public $authKey;
+    public $username;
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'login' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'login' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+    private static $users = [];
 
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id)
+    public static function findIdentity($_id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($_id);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['access_token' => $token]);
     }
 
-    /**
-     * Finds user by login
-     *
-     * @param string $login
-     * @return static|null
-     */
-    public static function findByLogin($login)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['login'], $login) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getId()
     {
-        return $this->id;
+        return $this->_id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAuthKey()
     {
         return $this->authKey;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateAuthKey($authKey)
     {
         return $this->authKey === $authKey;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
+    public static function collectionName()
     {
-        return $this->password === $password;
+        return 'users';
+    }
+
+    public function attributes()
+    {
+        return ['_id', 'login', 'password'];
+    }
+
+    public static function findByLogin($login)
+    {
+        return self::findOne(array('login' => $login));
     }
 }

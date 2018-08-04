@@ -4,15 +4,15 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use app\models\Users;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\EntryForm;
+use yii\data\Pagination;
 
-use yii\mongodb\Connection;
-//use yii\db\Connection;
 
 class SiteController extends Controller
 {
@@ -80,11 +80,12 @@ class SiteController extends Controller
         }
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        if($model->load(Yii::$app->request->post()) && $model->login())
+        {
+            return $this->redirect(['site/index']);
         }
 
-        $model->password = '';
         return $this->render('login', [
             'model' => $model,
         ]);
@@ -116,36 +117,38 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 
     public function actionUsers()
     {
-        return $this->render('users');
+        if (Yii::$app->user->isGuest) {
+            return $this->actionLogin();
+        }
+
+        $query = Users::find();
+
+        $pagination = new Pagination([
+            'defaultPageSize' => 25,
+            'totalCount' => $query->count(),
+        ]);
+
+        $users = $query->orderBy('_id')
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        return $this->render('users', [
+            'users' => $users,
+            'pagination' => $pagination,
+        ]);
+
+    }
+
+    public function actionUser()
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->actionLogin();
+        }
+        return $this->render('user');
+
     }
 }

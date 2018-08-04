@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\mongodb\Connection;
 
 /**
  * LoginForm is the model behind the login form.
@@ -15,9 +16,9 @@ class LoginForm extends Model
 {
     public $login;
     public $password;
-    public $rememberMe = true;
+    public $id;
 
-    private $_user = false;
+    private $password_hash;
 
 
     /**
@@ -28,54 +29,52 @@ class LoginForm extends Model
         return [
             // login and password are both required
             [['login', 'password'], 'required'],
-            // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
     }
 
-    /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
-     */
-    public function validatePassword($attribute, $params)
-    {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect login or password.');
-            }
-        }
-    }
-
-    /**
-     * Logs in a user using the provided login and password.
-     * @return bool whether the user is logged in successfully
-     */
     public function login()
     {
-        if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+        if($this->validate())
+        {
+            //$id = User::get
+            $user = User::findByLogin($this->login);
+            //$user = User::findIdentity()
+            /*
+            var_dump($user);
+            die;
+            */
+            return Yii::$app->user->login($user);
         }
+
         return false;
     }
 
-    /**
-     * Finds user by [[login]]
-     *
-     * @return User|null
-     */
-    public function getUser()
+    public function validatePassword($attribute, $params)
     {
-        if ($this->_user === false) {
-            $this->_user = User::findBylogin($this->login);
+        self::get_user_pass();
+
+        if(!Yii::$app->security->validatePassword($this->password, $this->password_hash))
+        {
+            $this->addError($attribute, "Password is incorrect");
         }
 
-        return $this->_user;
     }
+
+    public function get_user_pass()
+    {
+        $dsn = 'mongodb://root:tgEm8ZObfIpzXY2bNBSl@ds159121.mlab.com:59121/task';
+
+        $connection = new Connection([
+            'dsn' => $dsn,
+        ]);
+
+        $connection->open();
+        $collection = $connection->getCollection(['task', 'users']);
+
+        $user_pass = $collection->findOne(array('login' => $this->login));
+        $this->password_hash = $user_pass['password'];
+    }
+
+
 }
