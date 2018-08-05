@@ -17,6 +17,7 @@ class EntryForm extends ActiveRecord
     {
         return [
             [['login', 'password'], 'required'],
+            [['login', 'password'], 'trim'],
             ['login', 'unique', 'targetAttribute' => 'login', 'message' => 'This login has already been taken'],
 
         ];

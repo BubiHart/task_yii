@@ -17,9 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]); ?>
 
-        <?= $form->field($model, 'login') ?>
+        <?= $form->field($model, 'login')->textInput(['autofocus' => true]) ?>
 
-        <?= $form->field($model, 'password') ?>
+        <?= $form->field($model, 'password')->passwordInput() ?>
 
             <div class="form-group">
                 <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\base\Model;
+use yii\mongodb\ActiveRecord;
 use yii\mongodb\Connection;
 
 /**
@@ -12,7 +13,7 @@ use yii\mongodb\Connection;
  * @property User|null $user This property is read-only.
  *
  */
-class LoginForm extends Model
+class LoginForm extends ActiveRecord
 {
     public $login;
     public $password;
@@ -28,10 +29,24 @@ class LoginForm extends Model
     {
         return [
             // login and password are both required
+            [['login', 'password'], 'trim'],
             [['login', 'password'], 'required'],
+            ['login', 'exist', 'targetAttribute' => 'login', 'message' => 'No user with such a login'],
             ['password', 'validatePassword'],
+
         ];
     }
+
+    public static function collectionName()
+    {
+        return ['task', 'users'];
+    }
+
+    public function attributes()
+    {
+        return ['_id', 'login', 'password'];
+    }
+
 
     public function login()
     {
@@ -54,9 +69,13 @@ class LoginForm extends Model
     {
         self::get_user_pass();
 
-        if(!Yii::$app->security->validatePassword($this->password, $this->password_hash))
+
+        if(!empty($this->password_hash) && $this->password_hash != null)
         {
-            $this->addError($attribute, "Password is incorrect");
+            if(!Yii::$app->security->validatePassword($this->password, $this->password_hash))
+            {
+                $this->addError($attribute, "Password is incorrect");
+            }
         }
 
     }

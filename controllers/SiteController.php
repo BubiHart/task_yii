@@ -149,14 +149,18 @@ class SiteController extends Controller
 
     public function actionUpdate()
     {
+        if (Yii::$app->user->isGuest) {
+            return $this->actionLogin();
+        }
+
         $model = new UpdateForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            // valid data received in $model
 
-            // do something meaningful here about $model ...
+            $model->change_user_data();
 
-            return $this->render('update-confirm', ['model' => $model]);
+
+            return $this->redirect(['site/index']);
         } else {
             // either the page is initially displayed or there is some validation error
             return $this->render('update', ['model' => $model]);
