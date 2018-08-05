@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use app\models\ChangeUserData;
+use app\models\UpdateForm;
+use app\models\UpdateUser;
 use Yii;
 use yii\filters\AccessControl;
 use app\models\Users;
@@ -10,6 +12,7 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
+use app\models\UpdateData;
 use app\models\ContactForm;
 use app\models\EntryForm;
 use yii\data\Pagination;
@@ -144,21 +147,24 @@ class SiteController extends Controller
 
     }
 
-    public function actionUser()
+    public function actionUpdate()
     {
-        if (Yii::$app->user->isGuest) {
-            return $this->actionLogin();
+        $model = new UpdateForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            // valid data received in $model
+
+            // do something meaningful here about $model ...
+
+            return $this->render('update-confirm', ['model' => $model]);
+        } else {
+            // either the page is initially displayed or there is some validation error
+            return $this->render('update', ['model' => $model]);
         }
-
-        $model = new ChangeUserData();
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate())
-        {
-            return $this->render('index');
-        }
-
-            return $this->render('user', [
-            'model' => $model,
-            ]);
     }
+
+
+
+
+
 }
